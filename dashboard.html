@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Group Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        .chart-container { width: 60%; margin: auto; padding: 20px; }
+        table { width: 80%; margin: auto; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 8px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>📊 Telegram Group Admin Dashboard</h1>
+
+    <h2>📈 New Members Over Time</h2>
+    <div class="chart-container">
+        <canvas id="newMembersChart"></canvas>
+    </div>
+
+    <h2>👥 Active vs Inactive Members</h2>
+    <div class="chart-container">
+        <canvas id="activeInactiveChart"></canvas>
+    </div>
+
+    <h2>🏆 Top 5 Contributors</h2>
+    <table>
+        <tr><th>Username</th><th>Messages Sent</th></tr>
+        {% for user in data.top_contributors %}
+        <tr><td>{{ user.user }}</td><td>{{ user.messages }}</td></tr>
+        {% endfor %}
+    </table>
+
+    <script>
+        // New Members Chart
+        var newMembersCtx = document.getElementById('newMembersChart').getContext('2d');
+        new Chart(newMembersCtx, {
+            type: 'line',
+            data: {
+                labels: {{ data.dates | tojson }},
+                datasets: [{
+                    label: 'New Members',
+                    data: {{ data.new_members | tojson }},
+                    borderColor: 'blue',
+                    fill: false
+                }]
+            }
+        });
+
+        // Active vs Inactive Members Chart
+        var activeInactiveCtx = document.getElementById('activeInactiveChart').getContext('2d');
+        new Chart(activeInactiveCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ data.dates | tojson }},
+                datasets: [
+                    { label: 'Active Members', data: {{ data.active_members | tojson }}, backgroundColor: 'green' },
+                    { label: 'Inactive Members', data: {{ data.inactive_members | tojson }}, backgroundColor: 'red' }
+                ]
+            }
+        });
+    </script>
+</body>
+</html>
